@@ -62,11 +62,11 @@ function Slider() {
         ))}
         {/* SLIDE SKIP */}
       </div>
-      <div className='absolute m-auto left-1/2 bottom-8 flex gap-4'>
+      <div className='absolute m-auto left-[43%]  lg:bottom-8 bottom-4 flex gap-4'>
       {
           slides.map((slide,index) => (
-              <div  key={slide.id} onClick={()=>setcurrent(index)} className={`w-3 h-3 rounded-full ring-1 ring-gray-600 cursor-pointer flex items-center justify-center ${current === index ? "scale-150" : "" }`}>
-                {current === index && (<div className='w-[6px] h-[6px] bg-gray-600 rounded-full'></div>)}
+              <div  key={slide.id} onClick={()=>setcurrent(index)} className={`w-2 h-2 rounded-full ring-1 lg:ring-gray-600 ring-white cursor-pointer flex items-center justify-center ${current === index ? "scale-150" : "" }`}>
+                {current === index && (<div className='w-[6px] h-[6px] lg:bg-gray-600 bg-white rounded-full'></div>)}
             </div>
         ))
     }
