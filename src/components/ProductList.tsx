@@ -20,7 +20,7 @@ function ProductList() {
        <Link href="/test" className='w-full flex flex-col gap-4 sm:w-[45%] lg:w-[22%]'>
       <div className="relative w-full h-80">
         <Image src="https://images.pexels.com/photos/32614532/pexels-photo-32614532.jpeg" alt="" fill sizes='25vw' className='absolute object-cover rounded-md z-10 hover:opacity-0 transition-opacity easy duration-500' />
-        <Image src="https://images.pexels.com/photos/34627922/pexels-photo-34627922.jpeg" alt="" fill sizes='25vw' className='absolute object-cover rounded-md' />
+        <Image src="https://images.pexels.com/photos/34627916/pexels-photo-34627916.jpeg" alt="" fill sizes='25vw' className='absolute object-cover rounded-md' />
       </div>
       <div className="flex justify-between">
         <span className='font-medium'>Product Name2</span>
