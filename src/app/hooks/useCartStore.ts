@@ -15,6 +15,8 @@ interface CartState {
   totalItems: number;
   totalPrice: number;
   subtotal: number;
+  delivery: number;
+  salesTax: number;
   addItem: (item: CartItem) => void;
   removeItem: (productId: string, variantId?: string) => void;
   increaseQuantity: (productId: string, variantId?: string) => void;
