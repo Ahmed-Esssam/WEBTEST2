@@ -6,8 +6,9 @@
  */
 
 import { revalidateTag, revalidatePath } from "next/cache";
+
 export const revalidateTags = async (tags: string[]) => {
-  tags.forEach((tag) => revalidateTag(tag));
+  tags.forEach((tag) => revalidateTag(tag, { max: 0 })); // أضفنا الوسيط الثاني
   console.log(`Revalidated tags: ${tags.join(", ")}`);
 };
 
@@ -16,6 +17,6 @@ export const revalidateTags = async (tags: string[]) => {
  * @param paths - Array of paths to revalidate.
  */
 export const revalidatePaths = async (paths: string[]) => {
-  paths.forEach((path) => revalidatePath(path));
+  paths.forEach((path) => revalidatePath(path, { max: 0 })); // أضفنا الوسيط الثاني
   console.log(`Revalidated paths: ${paths.join(", ")}`);
 };
