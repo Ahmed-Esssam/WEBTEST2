@@ -2,7 +2,11 @@ import type { Metadata } from "next";
 import { AppSidebar } from "../../components/app-sidebar";
 
 import { Separator } from "../../app/components/ui/separator";
-import { SidebarInset, SidebarProvider, SidebarTrigger } from "../../app/components/ui/sidebar";
+import {
+  SidebarInset,
+  SidebarProvider,
+  SidebarTrigger,
+} from "../../app/components/ui/sidebar";
 
 export default function RootLayout({
   children,
@@ -21,7 +25,7 @@ export default function RootLayout({
           </header>
           <SidebarInset className=" w-full bg-white">{children}</SidebarInset>
         </div>
-        <SidebarProvider>
+      </SidebarProvider>
     </main>
   );
 }
