@@ -12,7 +12,7 @@ const Page = () => {
 
   return (
     // 2. تغليف كل شيء داخل الحارس
-    <ProtectedRoute>
+
       <MaxWidthWrapper >
         {/* هذا المحتوى لن يتم عرضه إلا للمستخدمين المسجلين */}
         <h2 className="text-black font-bold text-4xl">
@@ -20,7 +20,7 @@ const Page = () => {
         </h2>
         <p className="mt-4">This is your protected dashboard.</p>
       </MaxWidthWrapper>
-    </ProtectedRoute>
+
   );
 };
 
