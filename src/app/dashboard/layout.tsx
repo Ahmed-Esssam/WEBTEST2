@@ -12,7 +12,6 @@ export default function RootLayout({
   return (
     <main className=" w-full">
       {" "}
-      <SidebarProvider>
         <AppSidebar className="z-[50] bg-white" />
         <div className="flex  w-full flex-col">
           <header className="flex h-16 shrink-0 items-center gap-2 border-b px-4">
@@ -21,7 +20,6 @@ export default function RootLayout({
           </header>
           <SidebarInset className=" w-full bg-white">{children}</SidebarInset>
         </div>
-      </SidebarProvider>
     </main>
   );
 }
