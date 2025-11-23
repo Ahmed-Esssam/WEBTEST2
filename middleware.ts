@@ -17,7 +17,7 @@ export function middleware(req: NextRequest) {
 
   if (!token) {
     const loginUrl = req.nextUrl.clone();
-    loginUrl.pathname = "/login";
+    loginUrl.pathname = "/dashboard";
     return NextResponse.redirect(loginUrl);
   }
 
