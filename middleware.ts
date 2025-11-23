@@ -1,29 +1,33 @@
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
+import jwt from "jsonwebtoken";
 
 export function middleware(req: NextRequest) {
   const token = req.cookies.get("token")?.value;
-
-  const { pathname } = req.nextUrl;
+  const { pathname, origin } = req.nextUrl;
 
   if (
     pathname.startsWith("/_next") ||
-    pathname.startsWith("/api") ||
+    pathname.startsWith("/api/auth") ||
     pathname === "/login" ||
-    pathname === "/favicon.ico"
+    pathname === "/register"
   ) {
     return NextResponse.next();
   }
 
   if (!token) {
-    const loginUrl = req.nextUrl.clone();
-    loginUrl.pathname = "/dashboard";
-    return NextResponse.redirect(loginUrl);
+    return NextResponse.redirect(`${origin}/login`);
+  }
+
+  try {
+    jwt.verify(token, process.env.JWT_SECRET!);
+  } catch (err) {
+    return NextResponse.redirect(`${origin}/login`);
   }
 
   return NextResponse.next();
 }
 
 export const config = {
-  matcher: ["/:path*"],
+  matcher: ["/((?!_next|api/auth|favicon.ico).*)"],
 };
