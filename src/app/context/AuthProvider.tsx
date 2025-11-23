@@ -1,69 +1,80 @@
-// src/context/AuthProvider.tsx
-
 "use client";
 import React, { useState, createContext, useContext, useEffect } from "react";
+import axios from "../api/axios";
 
 interface User {
   name: string;
 }
 
 interface AuthState {
-  accessToken: string;
+  accessToken: string | null;
   user: User | null;
 }
 
 interface AuthContextType {
-  auth: AuthState | null;
-  setAuth: React.Dispatch<React.SetStateAction<AuthState | null>>;
-  isLoading: boolean;
+  auth: AuthState;
+  setAuth: React.Dispatch<React.SetStateAction<AuthState>>;
+  loading: boolean;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
-  const [auth, setAuth] = useState<AuthState | null>(null);
-  const [isLoading, setIsLoading] = useState(true);
+  const [auth, setAuth] = useState<AuthState>({ accessToken: null, user: null });
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    try {
-      const savedAuth = localStorage.getItem("auth");
-      if (savedAuth) {
-        setAuth(JSON.parse(savedAuth));
-      } else {
-        setAuth(null);
-      }
-    } catch {
-      setAuth(null);
-    } finally {
-      setIsLoading(false);
+    // جلب auth من localStorage عند أول تحميل
+    const savedAuth = localStorage.getItem("auth");
+    if (savedAuth) {
+      try {
+        const parsed = JSON.parse(savedAuth);
+        setAuth(parsed);
+      } catch {}
     }
+    setLoading(false);
   }, []);
 
   useEffect(() => {
-    if (!isLoading) {
-      if (auth) {
-        localStorage.setItem("auth", JSON.stringify(auth));
-      } else {
-        localStorage.removeItem("auth");
-      }
-    }
-  }, [auth, isLoading]);
+    // حفظ auth في localStorage
+    localStorage.setItem("auth", JSON.stringify(auth));
+  }, [auth]);
 
-  const value = { auth, setAuth, isLoading };
-
-  return (
-    <AuthContext.Provider value={value}>
-      {children}
-    </AuthContext.Provider>
-  );
+  return <AuthContext.Provider value={{ auth, setAuth, loading }}>{children}</AuthContext.Provider>;
 };
 
 export const useAuth = () => {
-  const context = useContext(AuthContext);
-  if (context === undefined) {
-    throw new Error("useAuth must be used within an AuthProvider");
-  }
-  return context;
+  const ctx = useContext(AuthContext);
+  if (!ctx) throw new Error("useAuth must be used within AuthProvider");
+  return ctx;
+};
+
+// Hook لتحديث الـ accessToken من السيرفر
+export const useRefreshToken = () => {
+  const { setAuth } = useAuth();
+
+  const refresh = async () => {
+    try {
+      const res = await axios.get("/auth/refresh", { withCredentials: true });
+      const newToken = res.data.accessToken || res.data.token;
+      if (!newToken) {
+        setAuth({ accessToken: null, user: null });
+        return null;
+      }
+
+      setAuth({
+        accessToken: newToken,
+        user: res.data.data?.user ?? null,
+      });
+
+      return newToken;
+    } catch {
+      setAuth({ accessToken: null, user: null });
+      return null;
+    }
+  };
+
+  return refresh;
 };
 
 export default AuthContext;
