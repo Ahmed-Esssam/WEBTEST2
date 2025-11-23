@@ -1,46 +1,46 @@
 "use client";
-import React, { useState, createContext, useContext, useEffect } from "react";
-import axios from "../api/axios";
+import React, { createContext, useContext, useState, useEffect } from "react";
 
-interface User {
-  name: string;
-}
-
+interface User { name: string; }
 interface AuthState {
   accessToken: string | null;
   user: User | null;
+  loading: boolean;
 }
-
 interface AuthContextType {
   auth: AuthState;
   setAuth: React.Dispatch<React.SetStateAction<AuthState>>;
-  loading: boolean;
+  isLoading: boolean;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
-  const [auth, setAuth] = useState<AuthState>({ accessToken: null, user: null });
-  const [loading, setLoading] = useState(true);
+  const [auth, setAuth] = useState<AuthState>({
+    accessToken: null,
+    user: null,
+    loading: true, // يبدأ بالـ loading
+  });
+
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    // جلب auth من localStorage عند أول تحميل
-    const savedAuth = localStorage.getItem("auth");
-    if (savedAuth) {
-      try {
-        const parsed = JSON.parse(savedAuth);
-        setAuth(parsed);
-      } catch {}
+    const saved = localStorage.getItem("auth");
+    if (saved) {
+      setAuth(JSON.parse(saved));
     }
-    setLoading(false);
+    setIsLoading(false);
   }, []);
 
   useEffect(() => {
-    // حفظ auth في localStorage
-    localStorage.setItem("auth", JSON.stringify(auth));
-  }, [auth]);
+    if (!isLoading) localStorage.setItem("auth", JSON.stringify(auth));
+  }, [auth, isLoading]);
 
-  return <AuthContext.Provider value={{ auth, setAuth, loading }}>{children}</AuthContext.Provider>;
+  return (
+    <AuthContext.Provider value={{ auth, setAuth, isLoading }}>
+      {children}
+    </AuthContext.Provider>
+  );
 };
 
 export const useAuth = () => {
@@ -48,33 +48,3 @@ export const useAuth = () => {
   if (!ctx) throw new Error("useAuth must be used within AuthProvider");
   return ctx;
 };
-
-// Hook لتحديث الـ accessToken من السيرفر
-export const useRefreshToken = () => {
-  const { setAuth } = useAuth();
-
-  const refresh = async () => {
-    try {
-      const res = await axios.get("/auth/refresh", { withCredentials: true });
-      const newToken = res.data.accessToken || res.data.token;
-      if (!newToken) {
-        setAuth({ accessToken: null, user: null });
-        return null;
-      }
-
-      setAuth({
-        accessToken: newToken,
-        user: res.data.data?.user ?? null,
-      });
-
-      return newToken;
-    } catch {
-      setAuth({ accessToken: null, user: null });
-      return null;
-    }
-  };
-
-  return refresh;
-};
-
-export default AuthContext;
